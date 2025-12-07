@@ -1,0 +1,548 @@
+===============================================================================
+MACHINE LEARNING ASSIGNMENT: EXPLAINABLE AI FOR ROBOT TELEMETRY DATA
+===============================================================================
+
+ASSIGNMENT OVERVIEW
+===============================================================================
+
+In this assignment, you will work with robot/drone telemetry data to build
+predictive models and apply Explainable AI (XAI) techniques to understand the
+relationships between different sensor readings, control signals, and system
+states.
+
+Your goal is to not only build accurate models but also to explain HOW and WHY
+these models make their predictions, providing insights into the complex
+relationships within the robotic system.
+
+
+===============================================================================
+DATASET DESCRIPTION
+===============================================================================
+
+You are provided with a comprehensive telemetry dataset containing:
+- GPS position data (latitude, longitude, altitude)
+- IMU sensor readings (orientation, angular velocity)
+- Battery status (voltage, current, temperature, percentage)
+- Motor control signals (RC output channels)
+- Flight/movement parameters (airspeed, groundspeed, heading, throttle)
+- System states (armed, guided, manual mode)
+- Communication quality metrics (RSSI)
+- System resources (CPU, RAM usage)
+
+You have three Classes:
+- Noraml
+- DoS_Attack
+- Malfunction
+
+Refer to the README.txt file for detailed field descriptions.
+
+
+===============================================================================
+ASSIGNMENT OBJECTIVES
+===============================================================================
+
+1. EXPLORATORY DATA ANALYSIS & PREPROCESSING
+2. MODEL TRAINING & HYPERPARAMETER TUNING
+3. MODEL EVALUATION & COMPARISON
+4. EXPLAINABLE AI ANALYSIS
+
+
+===============================================================================
+PART 1: DATA PREPROCESSING (30 points)
+===============================================================================
+
+Data preprocessing is a CRITICAL step that will significantly impact your
+model's performance. You must perform thorough preprocessing and document
+your decisions.
+
+REQUIRED PREPROCESSING STEPS:
+-------------------------------
+
+1.1 Data Loading and Initial Exploration
+   - Load the dataset and examine its structure
+   - Check data types and identify the target variable(s)
+   - Document dataset dimensions and any initial observations
+
+1.2 Missing Data Analysis
+   - Identify missing values in each column
+   - Visualize missing data patterns (heatmap, bar chart)
+   - Decide on appropriate strategies: imputation, deletion, or interpolation
+   - Document your rationale for handling missing data
+
+1.3 Outlier Detection and Treatment
+   - Use statistical methods (IQR, Z-score) to identify outliers
+   - Create box plots and scatter plots to visualize outliers
+   - Decide whether to remove, cap, or transform outliers
+   - Document your approach and reasoning
+
+1.4 Feature Engineering
+   - Create derived features if necessary (e.g., velocity magnitude, 
+     distance to target, battery drain rate)
+   - Extract temporal features from timestamps (if time-series analysis)
+   - Consider domain knowledge for feature creation
+
+1.5 Data Normalization/Standardization
+   - Apply appropriate scaling techniques (StandardScaler, MinMaxScaler, etc.)
+   - Explain why you chose specific scaling methods for different features
+
+1.6 Feature Correlation Analysis
+   - Compute correlation matrix
+   - Create correlation heatmap
+   - Identify highly correlated features
+   - Consider removing redundant features
+
+1.7 Data Splitting
+   - Split data into training, validation, and test sets
+   - Document split ratios (e.g., 70-15-15 or 60-20-20)
+   - Ensure stratification if dealing with classification
+
+
+REQUIRED VISUALIZATIONS FOR DATA INSIGHTS:
+-------------------------------------------
+
+You MUST include the following visualizations in your report:
+
+1. Distribution plots (histograms/KDE) for key numerical features
+2. Box plots for outlier detection
+3. Time series plots (if temporal analysis is relevant)
+4. Correlation heatmap
+5. Pair plots or scatter matrix for important feature relationships
+6. Missing data visualization (heatmap or bar chart)
+7. Feature importance plots (after initial analysis)
+8. Class distribution (if classification task)
+
+DELIVERABLE:
+- Preprocessed dataset ready for model training
+- Detailed documentation of all preprocessing steps
+- Comprehensive visualizations with insights and interpretations
+
+
+===============================================================================
+PART 2: MODEL TRAINING (40 points)
+===============================================================================
+
+You are required to train and evaluate the following SIX models. For each
+model, you must optimize hyperparameters and document your process. You may use 
+Grid Search CV to help you write code efficently.
+
+
+2.1 LONG SHORT-TERM MEMORY (LSTM)
+-----------------------------------
+
+PURPOSE: Capture temporal dependencies in sequential telemetry data
+
+IMPLEMENTATION REQUIREMENTS:
+- Input reshaping for sequence data (e.g., sliding windows)
+- Define LSTM architecture (number of layers, units per layer)
+- Consider bidirectional LSTM if appropriate
+
+HYPERPARAMETERS TO TUNE:
+- Number of LSTM layers: [1, 2, 3]
+- Number of units per layer: [32, 64, 128, 256]
+- Dropout rate: [0.0, 0.1, 0.2, 0.3, 0.5]
+- Learning rate: [0.001, 0.0001, 0.00001]
+- Batch size: [16, 32, 64, 128]
+- Number of epochs: [50, 100, 150, 200]
+- Optimizer: [Adam, RMSprop, SGD]
+- Activation function: [tanh, relu, sigmoid]
+
+SUGGESTED TUNING METHOD: Random Search CV or Grid Search CV
+
+
+2.2 1D CONVOLUTIONAL NEURAL NETWORK (1D-CNN)
+----------------------------------------------
+
+PURPOSE: Extract local patterns and features from sequential sensor data
+
+IMPLEMENTATION REQUIREMENTS:
+- Define 1D convolutional layers
+- Include pooling layers (MaxPooling1D or AveragePooling1D)
+- Flatten and add dense layers for final prediction
+
+HYPERPARAMETERS TO TUNE:
+- Number of convolutional layers: [1, 2, 3, 4]
+- Number of filters: [32, 64, 128, 256]
+- Kernel size: [3, 5, 7, 9]
+- Pooling size: [2, 3, 4]
+- Dropout rate: [0.0, 0.2, 0.3, 0.5]
+- Learning rate: [0.001, 0.0001]
+- Batch size: [16, 32, 64]
+- Activation function: [relu, elu, leaky_relu]
+- Dense layer units: [64, 128, 256]
+
+SUGGESTED TUNING METHOD: Random Search CV
+
+
+2.3 SUPPORT VECTOR MACHINE (SVM)
+----------------------------------
+
+PURPOSE: Classification or regression using optimal hyperplane separation
+
+IMPLEMENTATION REQUIREMENTS:
+- Use scikit-learn's SVC or SVR
+- Consider kernel selection carefully
+- May require feature scaling (ensure this is done)
+
+HYPERPARAMETERS TO TUNE:
+- Kernel: [linear, rbf, poly, sigmoid]
+- C (regularization): [0.1, 1, 10, 100, 1000]
+- Gamma (for rbf/poly): [scale, auto, 0.001, 0.01, 0.1, 1]
+- Degree (for poly): [2, 3, 4, 5]
+- Epsilon (for SVR): [0.01, 0.1, 0.5, 1.0]
+
+SUGGESTED TUNING METHOD: Grid Search CV
+
+
+2.4 XGBoost (Extreme Gradient Boosting)
+-----------------------------------------
+
+PURPOSE: Powerful gradient boosting for structured/tabular data
+
+IMPLEMENTATION REQUIREMENTS:
+- Use xgboost library
+- Monitor training with early stopping
+- Track feature importance
+
+HYPERPARAMETERS TO TUNE:
+- n_estimators: [100, 200, 500, 1000]
+- max_depth: [3, 5, 7, 9, 12]
+- learning_rate: [0.01, 0.05, 0.1, 0.2, 0.3]
+- subsample: [0.6, 0.7, 0.8, 0.9, 1.0]
+- colsample_bytree: [0.6, 0.7, 0.8, 0.9, 1.0]
+- min_child_weight: [1, 3, 5, 7]
+- gamma: [0, 0.1, 0.2, 0.3, 0.5]
+- reg_alpha: [0, 0.1, 0.5, 1]
+- reg_lambda: [0, 0.1, 0.5, 1]
+
+SUGGESTED TUNING METHOD: Random Search CV with early stopping
+
+
+2.5 VARIATIONAL AUTOENCODER (VAE)
+-----------------------------------
+
+PURPOSE: Learn compressed latent representations and detect anomalies
+
+IMPLEMENTATION REQUIREMENTS:
+- Implement encoder network (input → latent space)
+- Implement decoder network (latent space → reconstruction)
+- Define VAE loss (reconstruction + KL divergence)
+- Consider using latent representations for downstream tasks
+
+HYPERPARAMETERS TO TUNE:
+- Latent dimension: [8, 16, 32, 64]
+- Encoder layers: [[256, 128], [512, 256, 128], [1024, 512, 256]]
+- Decoder layers: [[128, 256], [128, 256, 512], [256, 512, 1024]]
+- Learning rate: [0.001, 0.0001, 0.00001]
+- Batch size: [32, 64, 128]
+- Beta (KL weight): [0.5, 1.0, 2.0, 4.0]
+- Activation function: [relu, elu, leaky_relu]
+- Number of epochs: [100, 200, 300]
+
+SUGGESTED TUNING METHOD: Random Search or Manual tuning
+
+
+2.6 FEEDFORWARD NEURAL NETWORK (FNN)
+--------------------------------------
+
+PURPOSE: Baseline deep learning model for non-sequential predictions
+
+IMPLEMENTATION REQUIREMENTS:
+- Design fully connected architecture
+- Include batch normalization (optional)
+- Use dropout for regularization
+
+HYPERPARAMETERS TO TUNE:
+- Number of hidden layers: [2, 3, 4, 5]
+- Neurons per layer: [64, 128, 256, 512]
+- Dropout rate: [0.0, 0.2, 0.3, 0.5]
+- Learning rate: [0.001, 0.0001, 0.00001]
+- Batch size: [16, 32, 64, 128]
+- Activation function: [relu, elu, leaky_relu, tanh]
+- Optimizer: [Adam, RMSprop, SGD]
+- Batch normalization: [True, False]
+- L2 regularization: [0.0, 0.001, 0.01, 0.1]
+
+SUGGESTED TUNING METHOD: Random Search CV
+
+
+GENERAL REQUIREMENTS FOR ALL MODELS:
+-------------------------------------
+
+1. Use cross-validation during hyperparameter tuning
+2. Document ALL hyperparameters tested
+3. Report the BEST hyperparameters found
+4. Explain your choice of search method (Random Search vs Grid Search)
+5. Track training time for each model
+6. Save trained models for reproducibility
+
+
+===============================================================================
+PART 3: MODEL EVALUATION (15 points)
+===============================================================================
+
+Evaluate each model using appropriate metrics:
+
+FOR REGRESSION TASKS:
+- Mean Absolute Error (MAE)
+- Mean Squared Error (MSE)
+- Root Mean Squared Error (RMSE)
+- R² Score
+- Mean Absolute Percentage Error (MAPE)
+
+FOR CLASSIFICATION TASKS:
+- Accuracy
+- Precision, Recall, F1-Score
+- Confusion Matrix
+- ROC-AUC Score
+- Classification Report
+
+REQUIRED OUTPUTS:
+1. Performance comparison table for all 6 models
+2. Bar charts comparing model performance
+3. Learning curves (training vs validation loss)
+4. Confusion matrices (if classification)
+5. Residual plots (if regression)
+6. Discussion of which model performs best and why
+
+
+===============================================================================
+PART 4: EXPLAINABLE AI (XAI) ANALYSIS (15 points)
+===============================================================================
+
+The core objective of this assignment is to EXPLAIN the relationships between
+features and understand WHY models make certain predictions.
+
+
+REQUIRED XAI TECHNIQUES:
+-------------------------
+
+4.1 FEATURE IMPORTANCE ANALYSIS
+   - For tree-based models (XGBoost): Extract and plot feature importance
+   - For neural networks: Use permutation importance
+   - Compare feature importance across different models
+   - Identify the top 10 most important features
+
+4.2 SHAP (SHapley Additive exPlanations)
+   - Install shap library: pip install shap
+   - Generate SHAP values for at least 2 models (e.g., XGBoost and FNN)
+   - Create SHAP summary plots (global feature importance)
+   - Create SHAP dependence plots for top features
+   - Generate SHAP force plots for individual predictions
+   - Generate SHAP waterfall plots
+   - Interpret what SHAP values reveal about feature relationships
+
+4.3 LIME (Local Interpretable Model-agnostic Explanations)
+   - Install lime library: pip install lime
+   - Apply LIME to at least 2 models
+   - Explain individual predictions using LIME
+   - Compare LIME explanations with SHAP explanations
+
+4.4 PARTIAL DEPENDENCE PLOTS (PDP)
+   - Create PDPs for top 5 features
+   - Interpret the relationship between features and predictions
+   - Identify non-linear relationships
+
+4.5 CORRELATION WITH TARGET
+   - Analyze feature correlation with target variable
+   - Create scatter plots with regression lines
+   - Identify linear vs non-linear relationships
+
+4.6 ATTENTION MECHANISMS (for LSTM/1D-CNN, Optional Bonus)
+   - Implement attention layers
+   - Visualize attention weights
+   - Explain which time steps the model focuses on
+
+
+ANALYSIS REQUIREMENTS:
+----------------------
+
+For your XAI analysis, you must answer the following questions:
+
+1. Which features have the strongest influence on predictions?
+2. Are there non-linear relationships between features and the target?
+3. How do different models interpret the same features?
+4. Can you identify any surprising or counterintuitive relationships?
+5. Do the explanations align with domain knowledge about robotics?
+6. Which features interact with each other?
+7. Are there any redundant features that could be removed?
+8. How stable are the explanations across different data samples?
+
+
+DELIVERABLES:
+-------------
+- SHAP summary plots for multiple models
+- SHAP dependence plots for key features
+- LIME explanations for sample predictions
+- Feature importance comparison across models
+- Partial dependence plots
+- Written interpretation of all XAI findings (minimum 2 pages)
+
+
+===============================================================================
+SUBMISSION REQUIREMENTS
+===============================================================================
+
+Your submission must include:
+
+1. JUPYTER NOTEBOOK or PYTHON SCRIPTS
+   - Well-commented code
+   - Clear section headers
+   - Reproducible results (set random seeds)
+
+2. WRITTEN REPORT (PDF)
+   - Introduction and problem definition
+   - Data preprocessing documentation with visualizations
+   - Model architectures and hyperparameter tuning results
+   - Model evaluation and comparison
+   - Explainable AI analysis with interpretations
+   - Conclusions and recommendations
+   - Minimum 10 pages (excluding code)
+
+3. TRAINED MODELS
+   - Save best models using pickle or joblib
+   - Include model loading instructions
+
+4. VISUALIZATIONS
+   - All required plots in high resolution
+   - Properly labeled axes and legends
+
+5. README FILE
+   - Instructions to run your code
+   - List of required libraries and versions
+   - Expected runtime for training
+
+6. GITHUB LINK
+   - Code is also supposed to be pushed onto Github
+
+
+===============================================================================
+GRADING RUBRIC
+===============================================================================
+
+Data Preprocessing & Visualization:        30 points
+  - Missing data handling:                  5 points
+  - Outlier treatment:                      5 points
+  - Feature engineering:                    5 points
+  - Scaling/normalization:                  5 points
+  - Visualizations and insights:           10 points
+
+Model Training:                            40 points
+  - LSTM implementation:                    7 points
+  - 1D-CNN implementation:                  7 points
+  - SVM implementation:                     6 points
+  - XGBoost implementation:                 7 points
+  - VAE implementation:                     7 points
+  - FNN implementation:                     6 points
+
+Model Evaluation:                          15 points
+  - Appropriate metrics:                    5 points
+  - Comparison analysis:                    5 points
+  - Visualizations:                         5 points
+
+Explainable AI Analysis:                   15 points
+  - SHAP analysis:                          5 points
+  - LIME analysis:                          3 points
+  - Feature importance:                     3 points
+  - Interpretation quality:                 4 points
+
+BONUS POINTS (up to 10 points):
+  - Attention mechanisms implementation
+  - Advanced feature engineering
+  - Ensemble methods
+  - Novel XAI techniques
+  - Exceptional visualization quality
+
+
+===============================================================================
+HELPFUL LIBRARIES
+===============================================================================
+
+Essential Libraries:
+- numpy, pandas (data manipulation)
+- matplotlib, seaborn (visualization)
+- scikit-learn (preprocessing, SVM, metrics)
+- tensorflow/keras or pytorch (LSTM, CNN, VAE, FNN)
+- xgboost (XGBoost)
+- shap (SHAP explanations)
+- lime (LIME explanations)
+
+Optional but Recommended:
+- plotly (interactive visualizations)
+- missingno (missing data visualization)
+- yellowbrick (machine learning visualization)
+- eli5 (explainability)
+
+
+===============================================================================
+TIPS FOR SUCCESS
+===============================================================================
+
+1. START EARLY - This is a comprehensive assignment requiring significant time
+
+2. UNDERSTAND YOUR DATA - Spend adequate time on EDA before modeling
+
+3. DOCUMENT EVERYTHING - Your preprocessing decisions, hyperparameter choices,
+   and interpretations should be well-documented
+
+4. INTERPRET, DON'T JUST REPORT - Don't just show SHAP plots; explain what
+   they mean in the context of robot telemetry
+
+5. COMPARE AND CONTRAST - Discuss why certain models perform better than others
+
+6. USE VERSION CONTROL - Consider using Git to track your progress
+
+7. TEST INCREMENTALLY - Don't wait until the end to test your code
+
+8. SEEK DOMAIN KNOWLEDGE - Research how real robotic systems work to better
+   interpret your results
+
+9. REPRODUCIBILITY - Set random seeds and document your environment
+
+10. ASK QUESTIONS - Don't hesitate to seek clarification
+
+
+===============================================================================
+ACADEMIC INTEGRITY
+===============================================================================
+
+- You may discuss general concepts with peers, but all code and analysis must
+  be your own work
+- Properly cite any external resources, tutorials, or papers you reference
+- Do not share your code or solutions with others
+- Plagiarism will result in severe penalties
+
+
+===============================================================================
+DEADLINE AND SUBMISSION
+===============================================================================
+
+Submission Deadline: [TO BE ANNOUNCED BY INSTRUCTOR]
+
+Submit via: [SUBMISSION PLATFORM]
+
+Late Submission Policy: [TO BE ANNOUNCED BY INSTRUCTOR]
+
+
+===============================================================================
+CONTACT INFORMATION
+===============================================================================
+
+For questions regarding this assignment:
+- Office Hours: [TO BE ANNOUNCED]
+- Email: [TO BE ANNOUNCED]
+- Discussion Forum: [TO BE ANNOUNCED]
+
+
+===============================================================================
+GOOD LUCK!
+===============================================================================
+
+This assignment is designed to give you hands-on experience with real-world
+machine learning workflows, from data preprocessing through model deployment
+and interpretation. The skills you develop here are directly applicable to
+industry and research positions.
+
+Focus on understanding the "why" behind every decision you make, and remember
+that explainability is just as important as accuracy in real-world applications.
+
+===============================================================================
